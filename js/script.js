@@ -55,14 +55,19 @@ function showPage(list, page){
 ***/
 
 function appendPageLinks(list){
-  numbOfPages = Math.ceil(list.length / 10);
+  let numbOfPages = Math.ceil(list.length / 10);
   let newDiv = document.createElement('div');
   newDiv.classList.add('pagination');
   document.getElementsByClassName('page').append(newDiv);
-  let newUl = newDiv.appendChild(ul);
+  let newUl = newDiv.appendChild("ul");
   for (let i = 1; i <= numbOfPages; i++){
-    newUl.appendChild
+    let newA = document.createElement('a');
+    let newLi = newUl.appendChild("li");
+    let pageNumbText = document.createTextNode(i);
+    newA.appendChild(pageNumbText);
+    newLi.appendChild(newA);
   }
+
 }
 
 
