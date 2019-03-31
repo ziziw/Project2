@@ -16,8 +16,7 @@ FSJS project 2 - List Filter and Pagination
    will only be used inside of a function, then it can be locally
    scoped to that function.
 ***/
-const studentList = document.getElementsByClassName('student-list');
-
+const newStudentList = document.getElementsByClassName('student-list')[0];
 
 
 /***
@@ -55,30 +54,40 @@ function showPage(list, page){
 ***/
 
 function appendPageLinks(list){
+
+
   //Determine how many pages are needed for the list by dividing the total number of list items by the max number of items per page
-  let numbOfPages = Math.ceil(list.length / 10);
+  let numbOfPages = Math.ceil(list.childElementCount / 10);
 
   //Create a div, give it the “pagination” class, and append it to the .page div
   let newDiv = document.createElement('div');
+  let newPage = document.querySelector('.page');
+
   newDiv.classList.add('pagination');
-  document.getElementsByClassName('page').append(newDiv);
+  newPage.appendChild(newDiv);
+
 
   //Add a ul to the “pagination” div to store the pagination links
-  let newUl = newDiv.appendChild("ul");
+  let newUl = document.createElement('ul');
+  newDiv.appendChild(newUl);
 
   //for every page, add li and a tags with the page number text
   for (let i = 1; i <= numbOfPages; i++){
     let newA = document.createElement('a');
-    let newLi = newUl.appendChild("li");
     let pageNumbText = document.createTextNode(i);
+    let newLi = document.createElement('li');
+    newUl.appendChild(newLi);
+
+
     newA.appendChild(pageNumbText);
     newLi.appendChild(newA);
   }
-
+  
 }
 
+//run the appendPageLinks function when the webpage loads.
 window.onload = () => {
-  appendPageLinks(studentList);
+  appendPageLinks(newStudentList);
 }
 
 
