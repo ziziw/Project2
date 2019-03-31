@@ -77,7 +77,7 @@ function appendPageLinks(list){
 
 }
 
-window.onload = function (){
+window.onload = () => {
   appendPageLinks(studentList);
 }
 
