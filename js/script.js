@@ -16,8 +16,10 @@ FSJS project 2 - List Filter and Pagination
    will only be used inside of a function, then it can be locally
    scoped to that function.
 ***/
-const newStudentList = document.querySelector('.student-list');
-
+const studentList = document.querySelector('.student-list');
+const studentItems = studentList.children;
+const pageHeader = document.querySelector('.page-header');
+const stuNames = document.querySelectorAll('h3');
 
 /***
    Create the `showPage` function to hide all of the items in the
@@ -34,16 +36,27 @@ const newStudentList = document.querySelector('.student-list');
        "invoke" the function
 ***/
 
-const showPage = (stuList, page) => {
+const pagesNeeded = (listItems) => {
+  return Math.ceil(listItems.length / 10);
+}
+
+const showPage = (listItems, page) => {
   const minimum = page * 10 - 10;
   const maximum = page * 10 - 1;
 
-  for (let i = 0; i < stuList.childElementCount; i++){
+  for (let i = 0; i < listItems.length; i++){
     if (i >= minimum && i <= maximum){
-      stuList.children[i].style.display = "";
+      listItems[i].style.display = "";
     } else {
-      stuList.children[i].style.display = "none";
+      listItems[i].style.display = "none";
     }
+  }
+}
+
+const removePagination = () => {
+  let pageDiv = document.querySelector('.pagination');
+  if (document.contains(pageDiv)){
+    pageDiv.remove();
   }
 }
 
@@ -52,26 +65,30 @@ const showPage = (stuList, page) => {
    functionality to the pagination buttons.
 ***/
 
-const appendPageLinks = (list) => {
+const appendPageLinks = (listItems) => {
+
+  removePagination();
 
   /*Determine how many pages are needed for the list
     by dividing the total number of list items
     by the max number of items per page*/
-  const numbOfPages = Math.ceil(newStudentList.childElementCount / 10);
+
+  const nbrOfPages = pagesNeeded(listItems);
 
   //Create a div, give it the “pagination” class, and append it to the .page div
   const newDiv = document.createElement('div');
   newDiv.className = ('pagination');
 
-  const newPage = document.querySelector('.page');
-  newPage.appendChild(newDiv);
+  const pageDiv = document.querySelector('.page');
+  pageDiv.appendChild(newDiv);
 
   //Add a ul to the “pagination” div to store the pagination links
   const newUl = document.createElement('ul');
+  newDiv.appendChild(newUl);
 
   //for every page, add li and a tags with the page number text
 
-  for (let i = 1; i <= numbOfPages; i++){
+  for (let i = 1; i <= nbrOfPages; i++){
 
     const newA = document.createElement('a');
     const newLi = document.createElement('li');
@@ -87,6 +104,7 @@ const appendPageLinks = (list) => {
       to display the appropriate page*/
 
     newA.addEventListener('click', (event) => {
+      const currPage = parseInt(event.target.textContent);
       const currNbrOfLis = newUl.childElementCount;
 
       //Loop over pagination links to remove active class from all links
@@ -98,23 +116,65 @@ const appendPageLinks = (list) => {
         You can identify that clicked link using event.target*/
       event.target.className = 'active';
 
-      showPage(list, i);
+      showPage(listItems, currPage);
     });
 
     newLi.appendChild(newA);
     newUl.appendChild(newLi);
 
   }
+}
 
-  newDiv.appendChild(newUl);
+const appendSearchField = (listItems) => {
+
+  const searchField = document.createElement('div');
+  searchField.className = "student-search";
+
+  const searchBar = document.createElement('input');
+  searchBar.placeholder = "Search for students...";
+
+  const searchButt = document.createElement('button');
+  searchButt.innerHTML = "Search";
+
+  const noResultsMsg = document.createElement('h1');
+  studentList.appendChild(noResultsMsg);
+
+  pageHeader.appendChild(searchField);
+  searchField.appendChild(searchBar);
+  searchField.appendChild(searchButt);
+
+  searchButt.addEventListener('click', (event) => {
+    const newList = [];
+    const userInput = searchBar.value.toUpperCase();
+
+    for (let i = 0; i < stuNames.length; i++){
+      const stuName = stuNames[i].textContent;
+      if (stuName.toUpperCase().indexOf(userInput) > -1){
+        listItems[i].style.display = '';
+        newList.push(listItems[i]);
+      } else {
+        listItems[i].style.display = 'none';
+      }
+    }
+    console.log(newList);
+    if (newList.length === 0){
+      noResultsMsg.textContent = "No results";
+      appendPageLinks(newList);
+    } else {
+      showPage(newList, 1);
+      appendPageLinks(newList);
+    }
+    //if counter == 0, "No results"
+    //else, show the buttons and pages.
+  });
+
 }
 
 //run the appendPageLinks function when the webpage loads.
 window.onload = () => {
-  showPage(newStudentList, 1);
-  appendPageLinks(newStudentList);
+  showPage(studentItems, 1);
+  appendPageLinks(studentItems);
+  appendSearchField(studentItems);
 }
-
-
 
 // Remember to delete the comments that came with this file, and replace them with your own code comments.
